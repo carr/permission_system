@@ -1,0 +1,6 @@
+= Controller/Role based permission system.
+
+For a custom path to your roles.rb / controllers.rb in environment.rb include
+    PermissionSystem.controllers_file = 'some_folder/controllers.rb'
+    PermissionSystem.roles_file = 'some_folder/roles.rb'
+
