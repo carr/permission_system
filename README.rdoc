@@ -4,3 +4,65 @@ For a custom path to your roles.rb / controllers.rb in environment.rb include
     PermissionSystem.controllers_file = 'some_folder/controllers.rb'
     PermissionSystem.roles_file = 'some_folder/roles.rb'
 
+== Sample 'config/controllers.rb' file
+    PermissionSystem::Builder.setup_controllers do |m|
+      m.controller_group "Dashboard" do |c|
+        c.controller :dashboard
+      end
+
+      m.controller_group "Content management" do |c|
+        c.controller :contents
+        c.controller :content_assemblies
+        c.controller :content_parts
+      end
+
+      m.controller_group "Delivery", :enabled => false do |c|
+        c.controller :deliveries
+        c.controller :delivery_attempts
+        c.controller :messages
+      end
+
+      m.controller_group "Administration", :in_menu => false do |c|
+        c.controller :users
+        c.controller :companies
+      end
+    end
+
+== Sample 'config/roles.rb' file
+    PermissionSystem::Builder.setup_roles do |builder|
+      builder.auto_god = true
+
+      builder.role "Public" do |anybody|
+        anybody.grant :users, :on => ['signup', 'do_signup', 'authorization_error',
+                                            'create', 'after_activation', 'activate',
+                                            'start_reset_process', 'reset_password',
+                                            'perform_password_reset', 'login', 'forgot_password']
+        anybody.grant :sessions, :on => ['new', 'create', 'destroy']
+
+
+        anybody.role "User" do |user|
+          user.grant :users, :on => ["my_profile", "save_my_profile", "generate_login_key"]
+
+          user.role "Content manager" do |content_manager|
+            content_manager.grant :contents
+            content_manager.grant :content_categories
+
+            content_manager.role "Superuser" do |superuser|
+              superuser.grant :users, :on => :all
+              superuser.grant :sessions, :on => :all
+
+              superuser.role "Root" do |root|
+                root.grant_all!
+              end
+            end
+          end
+        end
+      end
+    end
+
+== Sample 'config/available_modules.rb' file
+    PermissionSystem::Builder.setup_availability do |m|
+      m.disable "Contents"
+      m.enable "Delivery"
+    end
+
