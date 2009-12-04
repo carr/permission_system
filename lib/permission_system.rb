@@ -1,7 +1,7 @@
 module PermissionSystem
   mattr_accessor :roles_file
   mattr_accessor :controllers_file
-  mattr_accessor :modules_file
+  mattr_accessor :available_modules_file
 
   def self.included(base)
     self.roles_file ||= "#{RAILS_ROOT}/config/roles.rb"
@@ -12,7 +12,7 @@ module PermissionSystem
     raise "Controllers file doesn't exist at #{self.controllers_file}'" unless File.exists?(self.controllers_file)
 
     Role.build
-    load self.modules_file if File.exists?(self.modules_file)
+    load self.available_modules_file if File.exists?(self.available_modules_file)
   end
 
   def check_login

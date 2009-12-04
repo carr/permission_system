@@ -3,6 +3,7 @@
 For a custom path to your roles.rb / controllers.rb in environment.rb include
     PermissionSystem.controllers_file = 'some_folder/controllers.rb'
     PermissionSystem.roles_file = 'some_folder/roles.rb'
+    PermissionSystem.available_modules_file = 'some_folder/available_modules.rb'
 
 == Sample 'config/controllers.rb' file
     PermissionSystem::Builder.setup_controllers do |m|
