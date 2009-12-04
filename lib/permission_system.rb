@@ -6,7 +6,7 @@ module PermissionSystem
   def self.included(base)
     self.roles_file ||= "#{RAILS_ROOT}/config/roles.rb"
     self.controllers_file ||= "#{RAILS_ROOT}/config/controllers.rb"
-    self.modules_file ||= "#{RAILS_ROOT}/config/available_modules.rb"
+    self.available_modules_file ||= "#{RAILS_ROOT}/config/available_modules.rb"
 
     raise "Roles file doesn't exist at #{self.roles_file}'" unless File.exists?(self.roles_file)
     raise "Controllers file doesn't exist at #{self.controllers_file}'" unless File.exists?(self.controllers_file)
