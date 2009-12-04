@@ -1,9 +1,11 @@
 module PermissionSystem
-  class ControllerGroup < Struct.new(:name, :controllers, :in_menu)
+  class ControllerGroup < Struct.new(:name, :controllers, :in_menu, :enabled)
     cattr_accessor :all, :controllers_hash
 
     def self.build
       return @@all unless @@all.blank?
+
+      @@controllers_hash = {}
       load PermissionSystem.controllers_file
     end
 
@@ -13,10 +15,33 @@ module PermissionSystem
       build
     end
 
-    # list all the controller groups, loading them first if necessary
+    # list all the enabled controller groups
     def self.all
-      #if @@all.blank? then build else @@all end
-      @@all
+      @@all.select{|c| c.enabled}
+    end
+
+    # add the specified controller group
+    def self.add_controller_group(cg)
+      @@all << cg
+    end
+
+    # find the controller group with the specified name
+    def self.find_controller_group(controller_group_name)
+      cg = @@all.select{|c| c.name == controller_group_name }
+      raise "No controller group with name #{controller_group_name}" if cg.blank?
+      cg.first
+    end
+
+    # enable the specified controller group
+    def self.enable(controller_group_name)
+      cg = find_controller_group(controller_group_name)
+      cg.enabled = true
+    end
+
+    # disable the specified controller group
+    def self.disable(controller_group_name)
+      cg = find_controller_group(controller_group_name)
+      cg.enabled = false
     end
 
     # checks if this controller exists and returns its name

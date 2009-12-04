@@ -9,8 +9,23 @@ module PermissionSystem
     def self.setup_roles
       yield(RoleBuilder.new(nil))
     end
+
+    def self.setup_availability
+      yield(AvailabilityBuilder.new)
+    end
   end
 
+  class AvailabilityBuilder
+    def disable(controller_group_name)
+      ControllerGroup.disable(controller_group_name)
+    end
+
+    def enable(controller_group_name)
+      ControllerGroup.enable(controller_group_name)
+    end
+  end
+
+  # implements the DSL for managing controller groups in config/controllers.rb
   class ControllerGroupBuilder
     def initialize
       ControllerGroup.all = []
@@ -19,11 +34,15 @@ module PermissionSystem
     # add entry for controller group with name and options
     def controller_group(name, options = {})
       options[:in_menu] = true if options[:in_menu].nil?
+      options[:enabled] = true if options[:enabled].nil?
+
       controllers = yield(ControllerBuilder.new)
-      ControllerGroup.all << ControllerGroup.new(name, controllers, options[:in_menu])
+      controllers.each { |c| ControllerGroup.controllers_hash[c] = true }
+      ControllerGroup.add_controller_group ControllerGroup.new(name, controllers, options[:in_menu], options[:enabled])
     end
   end
 
+  # implements the DSL for managing controllers in config/controllers.rb
   class ControllerBuilder
     def initialize
       @all = []
@@ -34,6 +53,7 @@ module PermissionSystem
     end
   end
 
+  # implements the DSL for managing roles in config/routes.rb
   class RoleBuilder
     attr_accessor :auto_god, :all_permissions, :permissions
 
