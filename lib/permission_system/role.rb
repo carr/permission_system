@@ -27,11 +27,20 @@ module PermissionSystem
 
     # find the role specified by name
     def self.find(name)
+      return nil if all.blank?
+
       all.select{|x| x.name==name}.first
     end
 
     # find the appropriate permission for the controller and action
     def find_permission(controller, action)
+      # if the controller group isn't enabled return nil
+      return nil if ControllerGroup.find_controller(controller).nil?
+
+      if is_root?
+        return Permission.new(controller, action, true) # TODO is_god, hardcoded true
+      end
+
       result = permissions.select do |p|
         p.controller==controller && action=~Regexp.new(p.action)
       end
@@ -51,11 +60,7 @@ module PermissionSystem
 
     # does this role have permission for the controller and action
     def has_permission(controller, action)
-      if is_root?
-        return true
-      else
-        find_permission(controller, action) != nil
-      end
+      find_permission(controller, action) != nil
     end
 
     # TODO fali mi oblik metode koje ce pitati "da li si root ili neki od kojih on naslijedjuje dozvole?"

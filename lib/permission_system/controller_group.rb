@@ -47,7 +47,9 @@ module PermissionSystem
     # checks if this controller exists and returns its name
     # in the future if controllers have additional properties this will return them
     def self.find_controller(controller)
-      @@controllers_hash.has_key?(controller) ? controller : nil
+#      @@controllers_hash.has_key?(controller) ? controller : nil
+      cgs = all.find{|cg| cg.controllers.member?(controller) }
+      cgs.blank? ? nil : controller
     end
 
     # checks if the controller group contains this controller
